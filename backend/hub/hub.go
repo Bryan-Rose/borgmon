@@ -22,9 +22,10 @@ type Hub struct {
 	// um     *users.UserManager
 	// rm     *records.RecordManager
 	// sm     *systems.SystemManager
-	rm     *repos.RepoManager
-	pubKey string
-	appURL string
+	rm          *repos.RepoManager
+	pubKey      string
+	appURL      string
+	borgVersion string
 }
 
 func NewHub(app core.App) *Hub {
@@ -37,6 +38,16 @@ func NewHub(app core.App) *Hub {
 	// hub.sm = systems.NewSystemManager(hub)
 	hub.rm = repos.NewRepoManager((hub))
 	hub.appURL, _ = GetEnv("APP_URL")
+
+	borgVersion, err := hub.rm.CLI_Version()
+	if err != nil {
+		println("Unable to retrieve borg cli version")
+		println(err)
+	} else {
+		println("Borg version " + borgVersion)
+	}
+
+	hub.borgVersion = borgVersion
 	return hub
 }
 
