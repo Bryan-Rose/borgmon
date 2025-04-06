@@ -1,9 +1,9 @@
 package repos
 
 import (
-	"encoding/json"
 	"os/exec"
 	"strings"
+	"time"
 
 	"github.com/pocketbase/pocketbase/core"
 )
@@ -35,19 +35,87 @@ func (rm *RepoManager) CLI_Version() (string, error) {
 	return versionstring, nil
 }
 
-func (rm *RepoManager) CLI_RepoInfo() (BorgInfo, error) {
-	info := BorgInfo{}
-	cmd := exec.Command("borg", "info", "--json")
+func (rm *RepoManager) CLI_RepoInfo_JSON(path string) (string, error) {
+	info := ""
+	cmd := exec.Command("borg", "info", "--json", path)
 	outstream, err := cmd.CombinedOutput()
 	if err != nil {
 		return info, err
 	}
+	info = string(outstream)
 
-	err = json.Unmarshal(outstream, &info)
+	return info, nil
+}
 
+func (rm *RepoManager) CLI_RepoList_JSON(path string) (string, error) {
+	info := ""
+	cmd := exec.Command("borg", "list", "--json", path)
+	outstream, err := cmd.CombinedOutput()
 	if err != nil {
 		return info, err
 	}
+	info = string(outstream)
 
 	return info, nil
+}
+
+// func (rm *RepoManager) CLI_RepoInfo(path string) (CLI_BorgInfo, error) {
+// 	info := CLI_BorgInfo{}
+// 	str, err := rm.CLI_RepoInfo_JSON(path)
+// 	if err != nil {
+// 		return info, err
+// 	}
+// json.
+// 	err = json.Unmarshal(str, &info)
+
+// 	if err != nil {
+// 		return info, err
+// 	}
+
+// 	return info, nil
+// }
+
+func (rm *RepoManager) UpdateBorgData_All() {
+	rm.app.Logger().Info("Updating all records")
+	recs, err := rm.app.FindAllRecords("repos")
+	if err != nil {
+		rm.app.Logger().Error("Error getting all repos", err.Error())
+		return
+	}
+
+	rm.app.Logger().Info("Got repos to update", "count", len(recs))
+	for _, rec := range recs {
+		repo := rec.GetString("name")
+		err = rm.UpdateBorgData(repo)
+		if err != nil {
+			rm.app.Logger().Error("Error updating repo", "repo", repo, "err", err.Error())
+		}
+	}
+}
+
+func (rm *RepoManager) UpdateBorgData(repoName string) error {
+	rec, err := rm.app.FindFirstRecordByData("repos", "name", repoName)
+	if err != nil {
+		return err
+	}
+	// rm.app.DB().
+	// 	NewQuery("SELECT * FROM repos WHERE name = '{:name}'").
+	// 	Bind(dbx.Params{"name": repoName}).
+	// 	One(&rrecord)
+
+	borgInfo, err := rm.CLI_RepoInfo_JSON(rec.GetString("path"))
+	if err != nil {
+		return err
+	}
+	borgList, err := rm.CLI_RepoList_JSON(rec.GetString("path"))
+	if err != nil {
+		return err
+	}
+
+	rec.Set("borgInfo", borgInfo)
+	rec.Set("borgList", borgList)
+	rec.Set("borgUpdated", time.Now())
+	err = rm.app.Save(rec)
+
+	return err
 }

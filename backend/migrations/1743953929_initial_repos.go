@@ -64,6 +64,48 @@ func init() {
             },
             {
                 "hidden": false,
+                "id": "date3554865932",
+                "max": "",
+                "min": "",
+                "name": "borgUpdated",
+                "presentable": false,
+                "required": false,
+                "system": false,
+                "type": "date"
+            },
+            {
+                "hidden": false,
+                "id": "date3492744733",
+                "max": "",
+                "min": "",
+                "name": "lastBackup",
+                "presentable": false,
+                "required": false,
+                "system": false,
+                "type": "date"
+            },
+            {
+                "hidden": false,
+                "id": "json2903835201",
+                "maxSize": 0,
+                "name": "borgInfo",
+                "presentable": false,
+                "required": false,
+                "system": false,
+                "type": "json"
+            },
+            {
+                "hidden": false,
+                "id": "json2903835202",
+                "maxSize": 0,
+                "name": "borgList",
+                "presentable": false,
+                "required": false,
+                "system": false,
+                "type": "json"
+            },
+            {
+                "hidden": false,
                 "id": "autodate2990389176",
                 "name": "created",
                 "onCreate": true,

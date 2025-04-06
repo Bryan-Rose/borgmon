@@ -117,6 +117,8 @@ func (h *Hub) initialize(e *core.ServeEvent) error {
 
 // registerCronJobs sets up scheduled tasks
 func (h *Hub) registerCronJobs(_ *core.ServeEvent) error {
+	h.Cron().MustAdd("update repos", "8 * * * *", h.rm.UpdateBorgData_All)
+
 	// delete old records once every hour
 	// h.Cron().MustAdd("delete old records", "8 * * * *", h.rm.DeleteOldRecords)
 
@@ -128,13 +130,23 @@ func (h *Hub) registerCronJobs(_ *core.ServeEvent) error {
 // custom api routes
 func (h *Hub) registerApiRoutes(se *core.ServeEvent) error {
 	// // returns public key and version
-	// se.Router.GET("/api/beszel/getkey", func(e *core.RequestEvent) error {
-	// 	info, _ := e.RequestInfo()
-	// 	if info.Auth == nil {
-	// 		return apis.NewForbiddenError("Forbidden", nil)
-	// 	}
-	// 	return e.JSON(http.StatusOK, map[string]string{"key": h.pubKey, "v": beszel.Version})
-	// })
+	se.Router.PUT("/api/borgmon/refreshrepo", func(e *core.RequestEvent) error {
+		info, _ := e.RequestInfo()
+		// if info.Auth == nil {
+		// 	return apis.NewForbiddenError("Forbidden", nil)
+		// }
+
+		repo := info.Body["repo"].(string)
+		e.App.Logger().Info("Manual refresh of repo", "repo", repo)
+		err := h.rm.UpdateBorgData(repo)
+		if err != nil {
+			e.App.Logger().Error("Error during refresh", "repo", repo, "err", err.Error())
+			return e.InternalServerError("Error during refresh", nil)
+		}
+
+		return e.JSON(http.StatusOK, map[string]string{})
+	})
+
 	// // check if first time setup on login page
 	// se.Router.GET("/api/beszel/first-run", func(e *core.RequestEvent) error {
 	// 	total, err := h.CountRecords("users")

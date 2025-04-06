@@ -1,6 +1,9 @@
 package repos
 
-type BorgInfo struct {
+type RepoRecord struct {
+}
+
+type CLI_BorgInfo struct {
 	Cache struct {
 		Path  string `json:"path"`
 		Stats struct {
@@ -23,7 +26,7 @@ type BorgInfo struct {
 	SecurityDir string `json:"security_dir"`
 }
 
-type BorgList struct {
+type CLI_BorgList struct {
 	Archives []struct {
 		Archive  string `json:"archive"`
 		Barchive string `json:"barchive"`
