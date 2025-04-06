@@ -8,6 +8,8 @@ import (
 
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
+
+	_ "borgmon/backend/migrations"
 )
 
 func main() {
@@ -41,7 +43,7 @@ func getBaseApp() *pocketbase.PocketBase {
 	// enable auto creation of migration files when making collection changes in the Admin UI
 	migratecmd.MustRegister(baseApp, baseApp.RootCmd, migratecmd.Config{
 		Automigrate: isDev,
-		Dir:         "../../migrations",
+		Dir:         "migrations",
 	})
 
 	return baseApp
