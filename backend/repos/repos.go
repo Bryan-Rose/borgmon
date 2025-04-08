@@ -19,6 +19,7 @@ func NewRepoManager(app core.App) *RepoManager {
 }
 
 func (rm *RepoManager) CLI_Version() (string, error) {
+	// Example:
 	// borg --version
 	// borg 1.2.8
 	cmd := exec.Command("borg", "--version")
@@ -59,22 +60,6 @@ func (rm *RepoManager) CLI_RepoList_JSON(path string) (string, error) {
 	return info, nil
 }
 
-// func (rm *RepoManager) CLI_RepoInfo(path string) (CLI_BorgInfo, error) {
-// 	info := CLI_BorgInfo{}
-// 	str, err := rm.CLI_RepoInfo_JSON(path)
-// 	if err != nil {
-// 		return info, err
-// 	}
-// json.
-// 	err = json.Unmarshal(str, &info)
-
-// 	if err != nil {
-// 		return info, err
-// 	}
-
-// 	return info, nil
-// }
-
 func (rm *RepoManager) UpdateBorgData_All() {
 	rm.app.Logger().Info("Updating all records")
 	recs, err := rm.app.FindAllRecords("repos")
@@ -98,10 +83,6 @@ func (rm *RepoManager) UpdateBorgData(repoName string) error {
 	if err != nil {
 		return err
 	}
-	// rm.app.DB().
-	// 	NewQuery("SELECT * FROM repos WHERE name = '{:name}'").
-	// 	Bind(dbx.Params{"name": repoName}).
-	// 	One(&rrecord)
 
 	borgInfo, err := rm.CLI_RepoInfo_JSON(rec.GetString("path"))
 	if err != nil {
