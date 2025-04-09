@@ -1,0 +1,31 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "go",
+			"label": "go: build package",
+			"command": "build",
+			"args": [
+				"${fileDirname}"
+			],
+			"problemMatcher": [
+				"$go"
+			],
+			"group": "build",
+			"detail": "cd ${workspaceFolder}; go build ${fileDirname}"
+		},
+		{
+			"type": "docker-build",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"label": "Build docker image",
+			"dockerBuild": {
+				"dockerfile": "${workspaceFolder}/Dockerfile",
+				"tag": "borgmon:latest",
+				"context": "${workspaceFolder}"
+			}
+		}
+	]
+}

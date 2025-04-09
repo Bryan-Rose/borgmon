@@ -1,0 +1,22 @@
+{
+    "cache": {
+        "path": "/home/default/.cache/borg/636b8fcc9335340251287479e7212492f3b7c37a526e21b9397acfeebfb6002f",
+        "stats": {
+            "total_chunks": 444236,
+            "total_csize": 108602572699,
+            "total_size": 354648302861,
+            "total_unique_chunks": 62823,
+            "unique_csize": 12784282568,
+            "unique_size": 41543067153
+        }
+    },
+    "encryption": {
+        "mode": "none"
+    },
+    "repository": {
+        "id": "636b8fcc9335340251287479e7212492f3b7c37a526e21b9397acfeebfb6002f",
+        "last_modified": "2025-04-03T03:48:00.000000",
+        "location": "/pool/borg/apphost/docker-all"
+    },
+    "security_dir": "/home/default/.config/borg/security/636b8fcc9335340251287479e7212492f3b7c37a526e21b9397acfeebfb6002f"
+}
