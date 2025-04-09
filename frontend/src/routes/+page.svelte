@@ -5,109 +5,101 @@
 	let { data }: PageProps = $props();
 </script>
 
-{#each data.repos as repo}
-	<div class="repo-record">
-		<h2>{repo.name}</h2>
-		<p>Updated: {formatDate(repo.borgUpdated)}</p>
-		<p><strong>Path:</strong> {repo.path}</p>
-		<p><strong>Last Backup:</strong> {formatDate(repo.lastBackup)}</p>
-
-		{#if repo.borgInfo.cache}
-			<h5>Cache Stats</h5>
-			<p><strong>Total Chunks:</strong> {repo.borgInfo.cache.stats?.total_chunks}</p>
-			<p>
-				<strong>Total Compressed Size:</strong>
-				{formatBytes(repo.borgInfo.cache.stats?.total_csize)}
+<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+	{#each data.repos as repo (repo.path)}
+		<div class="rounded-lg bg-white p-6 shadow-md">
+			<h2 class="mb-2 text-xl font-semibold text-gray-800">{repo.name}</h2>
+			<p class="mb-1 text-gray-600">
+				<strong class="font-medium">Path:</strong>
+				{repo.path}
 			</p>
-			<p><strong>Total Size:</strong> {formatBytes(repo.borgInfo.cache.stats?.total_size)}</p>
-			<p>
-				<strong>Total Unique Chunks:</strong>
-				{repo.borgInfo.cache.stats?.total_unique_chunks}
+			<p class="mb-1 text-gray-600">
+				<strong class="font-medium">Borg Updated:</strong>
+				{formatDate(repo.borgUpdated)}
 			</p>
-			<p>
-				<strong>Unique Compressed Size:</strong>
-				{formatBytes(repo.borgInfo.cache.stats?.unique_csize)}
+			<p class="mb-1 text-gray-600">
+				<strong class="font-medium">Last Backup:</strong>
+				{formatDate(repo.lastBackup)}
 			</p>
-			<p><strong>Unique Size:</strong> {formatBytes(repo.borgInfo.cache.stats?.unique_size)}</p>
-		{:else}
-			<p>Cache information not available.</p>
-		{/if}
+		</div>
 
-		
-		<h3>Borg List</h3>
-		{#if repo.borgList}
-			<h4>Archives</h4>
-			{#if repo.borgList.archives && repo.borgList.archives.length > 0}
-				<ul>
-					{#each repo.borgList.archives as archive}
-						<li>
-							<strong>Archive:</strong>
-							{archive.archive} ({archive.name})<br />
-							<!-- <strong>ID:</strong>
-							{archive.id}<br /> -->
-							<strong>Start Time:</strong>
-							{formatDate(archive.start)}<br />
-							<strong>Time:</strong>
-							{formatDate(archive.time)}<br />
-							<strong>Barchive:</strong>
-							{archive.barchive}
-						</li>
-					{/each}
-				</ul>
-			{:else}
-				<p>No archives found.</p>
-			{/if}
-		{:else}
-			<p>Borg list information not available.</p>
-		{/if}
-	</div>
-{/each}
+		<div class="rounded-lg bg-gray-100 p-6 shadow-md">
+			<h3 class="mb-2 text-lg font-semibold text-gray-700">Detailed Information</h3>
 
-<style>
-	.repo-record {
-		border: 1px solid #ccc;
-		padding: 15px;
-		margin-bottom: 15px;
-		border-radius: 5px;
-		background-color: #f9f9f9;
-	}
+			<div class="mb-4">
+				{#if repo.borgInfo}
+					<div class="mb-2">
+						<h5 class="text-sm font-semibold text-gray-700">Repository</h5>
+						<p class="text-gray-600">
+							<strong class="font-medium">Location:</strong>
+							{repo.borgInfo.repository?.location || '-'}
+						</p>
+						<p class="text-gray-600">
+							<strong class="font-medium">Last Modified:</strong>
+							{formatDate(repo.borgInfo.repository?.last_modified)}
+						</p>
+					</div>
 
-	.repo-record h2 {
-		margin-top: 0;
-		margin-bottom: 10px;
-		color: #333;
-	}
+					<div>
+						{#if repo.borgInfo.cache}
+							<h6 class="mt-1 text-xs font-semibold text-gray-700">Stats</h6>
+							<div class="flex items-center space-x-4 text-sm">
+								<p class="text-gray-600">
+									<strong class="font-medium">Total Chunks:</strong>
+									{repo.borgInfo.cache.stats?.total_chunks || '-'}
+								</p>
+								<p class="text-gray-600">
+									<strong class="font-medium">Total Size:</strong>
+									{formatBytes(repo.borgInfo.cache.stats?.total_size)}
+								</p>
+								<p class="text-gray-600">
+									<strong class="font-medium">Total CSize:</strong>
+									{formatBytes(repo.borgInfo.cache.stats?.total_csize)}
+								</p>
+							</div>
+							<div class="mt-1 flex items-center space-x-4 text-sm">
+								<p class="text-gray-600">
+									<strong class="font-medium">Unique Chunks:</strong>
+									{repo.borgInfo.cache.stats?.total_unique_chunks || '-'}
+								</p>
+								<p class="text-gray-600">
+									<strong class="font-medium">Unique Size:</strong>
+									{formatBytes(repo.borgInfo.cache.stats.unique_size)}
+								</p>
+								<p class="text-gray-600">
+									<strong class="font-medium">Unique CSize:</strong>
+									{formatBytes(repo.borgInfo.cache.stats?.unique_csize)}
+								</p>
+							</div>
+						{:else}
+							<p class="text-gray-500">Cache information not available.</p>
+						{/if}
+					</div>
+				{:else}
+					<p class="text-gray-500">Borg info not available.</p>
+				{/if}
+			</div>
 
-	.repo-record h3 {
-		margin-top: 20px;
-		margin-bottom: 10px;
-		color: #555;
-	}
-
-	.repo-record h4 {
-		margin-top: 15px;
-		margin-bottom: 5px;
-		color: #777;
-	}
-
-	.repo-record p {
-		margin-bottom: 5px;
-	}
-
-	.repo-record ul {
-		list-style-type: disc;
-		padding-left: 20px;
-	}
-
-	.repo-record li {
-		margin-bottom: 8px;
-		padding: 8px;
-		border: 1px solid #eee;
-		border-radius: 3px;
-		background-color: #fff;
-	}
-
-	.repo-record strong {
-		font-weight: bold;
-	}
-</style>
+			<div class="mb-4">
+				<h4 class="text-md mb-1 font-semibold text-gray-700">Archives</h4>
+				{#if repo.borgList?.archives?.length > 0}
+					<ul class="list-disc pl-5 text-gray-600">
+						{#each repo.borgList.archives as archive}
+							<li>
+								<strong class="font-medium">{archive.name}</strong>
+								<div class="ml-4 flex items-center space-x-2 text-sm">
+									<span class="font-semibold">Start:</span>
+									<span>{formatDate(archive.start)} </span>
+									<span class="font-semibold">End:</span>
+									<span>{formatDate(archive.time)}</span>
+								</div>
+							</li>
+						{/each}
+					</ul>
+				{:else}
+					<p class="text-gray-500">No archives found.</p>
+				{/if}
+			</div>
+		</div>
+	{/each}
+</div>

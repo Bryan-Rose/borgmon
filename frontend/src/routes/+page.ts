@@ -10,6 +10,7 @@ export const load: PageLoad = async ({ fetch }) => {
 	});
 	
 	const items = await res.json() as CollectionsListResponse<RepoRecord>;
+
 	return {
 		repos: items.items
 	};
