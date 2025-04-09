@@ -1,0 +1,13 @@
+.vscode/
+examples/
+test-repos
+Dockerfile
+
+# Backend
+Borgmon_data/
+*/Borgmon_data/
+
+# Frontend
+frontend/.svelte-kit
+frontend/build
+frontend/node_modules

@@ -39,10 +39,14 @@ func NewHub(app core.App) *Hub {
 	hub.rm = repos.NewRepoManager((hub))
 	hub.appURL, _ = GetEnv("APP_URL")
 
+	err := hub.rm.InitCLI()
+	if err != nil {
+		panic("Unable to find borg executable " + err.Error())
+	}
+
 	borgVersion, err := hub.rm.CLI_Version()
 	if err != nil {
-		println("Unable to retrieve borg cli version")
-		println(err)
+		panic("Unable to retrieve borg cli version " + err.Error())
 	} else {
 		println("Borg version " + borgVersion)
 	}
@@ -101,7 +105,6 @@ func (h *Hub) StartHub() error {
 	// h.App.OnRecordCreate("user_settings").BindFunc(h.um.InitializeUserSettings)
 
 	if pb, ok := h.App.(*pocketbase.PocketBase); ok {
-		// log.Println("Starting pocketbase")
 		err := pb.Start()
 		if err != nil {
 			return err

@@ -31,6 +31,7 @@ func getBaseApp() *pocketbase.PocketBase {
 	baseApp.RootCmd.Version = borgmon.Version
 	baseApp.RootCmd.Use = borgmon.AppName
 	baseApp.RootCmd.Short = ""
+
 	// add health command
 	// baseApp.RootCmd.AddCommand(newHealthCmd())
 

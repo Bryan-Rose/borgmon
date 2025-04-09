@@ -1,7 +1,9 @@
 package repos
 
 import (
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -10,6 +12,40 @@ import (
 
 type RepoManager struct {
 	app core.App
+}
+
+var borgExec = ""
+
+func (rm *RepoManager) InitCLI() error {
+	cmd := exec.Command("borg", "--version")
+
+	if cmd.Err == nil {
+		rm.app.Logger().Info("Using borg executable from $PATH")
+		borgExec = "borg"
+		return nil
+	}
+
+	lerr := cmd.Err.Error()
+	if strings.Contains(lerr, "executable file not found") == false {
+		return cmd.Err
+	}
+
+	localPath, err := os.Executable()
+	if err != nil {
+		return err
+	}
+
+	localPath = filepath.Dir(localPath)
+
+	localPath = filepath.Join(localPath, "borg")
+	cmd = exec.Command(localPath, "--version")
+	if cmd.Err != nil {
+		return err
+	}
+
+	borgExec = localPath
+
+	return nil
 }
 
 func NewRepoManager(app core.App) *RepoManager {
@@ -22,7 +58,7 @@ func (rm *RepoManager) CLI_Version() (string, error) {
 	// Example:
 	// borg --version
 	// borg 1.2.8
-	cmd := exec.Command("borg", "--version")
+	cmd := exec.Command(borgExec, "--version")
 	outstream, err := cmd.CombinedOutput()
 
 	if err != nil {
@@ -38,7 +74,7 @@ func (rm *RepoManager) CLI_Version() (string, error) {
 
 func (rm *RepoManager) CLI_RepoInfo_JSON(path string) (string, error) {
 	info := ""
-	cmd := exec.Command("borg", "info", "--json", path)
+	cmd := exec.Command(borgExec, "info", "--json", path)
 	outstream, err := cmd.CombinedOutput()
 	if err != nil {
 		return info, err
@@ -50,7 +86,7 @@ func (rm *RepoManager) CLI_RepoInfo_JSON(path string) (string, error) {
 
 func (rm *RepoManager) CLI_RepoList_JSON(path string) (string, error) {
 	info := ""
-	cmd := exec.Command("borg", "list", "--json", path)
+	cmd := exec.Command(borgExec, "list", "--json", path)
 	outstream, err := cmd.CombinedOutput()
 	if err != nil {
 		return info, err
