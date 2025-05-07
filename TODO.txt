@@ -1,0 +1,9 @@
+centralized api client
+check for 403/301 redirect to home
+
+
+regular user permisisons on repos table
+
+add repo
+refresh repo(s) button
+
